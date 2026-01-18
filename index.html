@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>移动端商城演示</title>
     <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <img src="image/rentouxiang.jpg">
     <!-- 顶部导航 -->
     <nav class="navbar">
         <div class="menu-btn" onclick="toggleSidebar()">
             <!-- SVG 菜单图标 -->
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round">
                 <line x1="3" y1="12" x2="21" y2="12"></line>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
                 <line x1="3" y1="18" x2="21" y2="18"></line>
@@ -42,31 +44,85 @@
     </main>
 
     <script>
-        // 1. 模拟商品数据
-        const products = [
-            { id: 1, name: "小米 14 Pro 手机", price: 4999, category: "shouji" },
-            { id: 2, name: "华为 Mate 60", price: 6999, category: "shouji" },
-            { id: 3, name: "iPhone 15", price: 5999, category: "shouji" },
-            { id: 4, name: "联想拯救者 Y9000P", price: 8999, category: "diannao" },
-            { id: 5, name: "MacBook Air M2", price: 7999, category: "diannao" },
-            { id: 6, name: "罗技 G502 鼠标", price: 299, category: "peijian" },
-            { id: 7, name: "机械键盘 Cherry轴", price: 499, category: "peijian" },
-            { id: 8, name: "纯棉短袖T恤", price: 59, category: "fushi" },
-            { id: 9, name: "耐克运动鞋", price: 499, category: "fushi" },
-            { id: 10, name: "卫龙辣条大礼包", price: 29, category: "lingshi" },
-            { id: 11, name: "三只松鼠坚果", price: 89, category: "lingshi" },
-            { id: 12, name: "索尼降噪耳机", price: 1999, category: "shuma" },
+
+        const imageFiles = [
+            "AD钙奶-5-饮料.jpg",
+            "AD钙奶220ml4瓶-8-饮料.jpg",
+            "AD钙奶220ml24瓶-58-饮料.jpg",
+            "AD钙奶水蜜桃味-5-饮料.jpg",
+            "东鹏特饮250ml-3-饮料.jpg",
+            "东鹏特饮500ml-5-饮料.jpg",
+            "可乐罐装200ml-2.5-饮料.jpg",
+            "可口可乐大瓶2L-7-饮料.jpg",
+            "可口可乐系列300ml-2-饮料.jpg",
+            "果粒橙1.25L-11-饮料.jpg",
+            "果粒橙500ml-4-饮料.jpg",
+            "果粒橙小瓶.jpg", // 注意：这个文件名不符合规则，没有价格和分类
+            "红牛-5-饮料.jpg",
+            "统一双萃1L-4-饮料.jpg",
+            "统一双萃500ml-3-饮料.jpg",
+            "统一系列瓶装1L-4-饮料.jpg",
+            "统一系列瓶装500ml-3-饮料.jpg",
+            "统一系列盒装-2-饮料.jpg",
+            "统一系列罐装-2.5-饮料.jpg",
+            "统一阿萨姆奶茶1.5L-11-饮料.jpg",
+            "统一阿萨姆奶茶500ml-4-饮料.jpg",
+            "脉动-5-饮料.jpg",
+            "芬达大瓶2L-7-饮料.jpg",
+            "茶π500ml-5-饮料.jpg",
+            "营养快线-5-饮料.jpg",
+            "营养快线原味-5-饮料.jpg",
+            "营养快线白包装-5-饮料.jpg",
+            "雪碧大瓶2L-7-饮料.jpg",
+            "雪碧罐装200ml-2.5-饮料.jpg"
         ];
+
+        
+
+        let products = [];
+
+        function parseFileName() {
+            products = imageFiles.map(file => {
+                // 1. 去掉 .jpg 后缀
+                let baseName = file.replace('.jpg', '').replace('.jpeg', '').replace('.png', '');
+
+                // 2. 按 "-" 分割
+                // 注意：商品名里可能有"-"，所以我们只分割最后两部分（价格和分类）
+                const parts = baseName.split('-');
+
+                // 安全检查：如果分割后少于3部分，跳过或设置默认值
+                if (parts.length < 3) {
+                    console.warn(`文件名格式不正确，已跳过: ${file}`);
+                    return null;
+                }
+
+                // 最后一部分是分类
+                const category = parts.pop();
+                // 倒数第二部分是价格
+                const priceStr = parts.pop();
+                // 剩下的所有部分合起来是商品名
+                const name = parts.join('-');
+
+                const price = parseFloat(priceStr); // 使用 parseFloat 支持小数价格
+                if (isNaN(price)) {
+                    console.warn(`价格解析失败，已跳过: ${file}`);
+                    return null;
+                }
+
+                return {
+                    id: Math.random().toString(36).substr(2, 9), // 生成随机ID
+                    name: name.trim(),
+                    price: price,
+                    category: category.trim(),
+                    image: `image/${category}/${file}`
+                };
+            }).filter(Boolean); // 过滤掉 null 值
+        }
 
         // 分类定义
         const categories = [
             { id: "all", name: "全部商品" },
-            { id: "shouji", name: "手机通讯" },
-            { id: "diannao", name: "电脑办公" },
-            { id: "peijian", name: "电脑配件" },
-            { id: "shuma", name: "数码影音" },
-            { id: "fushi", name: "潮流服饰" },
-            { id: "lingshi", name: "休闲零食" },
+            { id: "饮料", name: "饮料" }
         ];
 
         // 状态变量
@@ -81,6 +137,7 @@
 
         // 2. 初始化渲染
         function init() {
+            parseFileName();
             renderCategories();
             renderProducts();
         }
@@ -112,12 +169,12 @@
             } else {
                 productGrid.innerHTML = filteredData.map(item => `
                     <div class="product-card">
-                        <div class="product-img" style="background-color: ${getRandomColor()}">
-                            <span>商品图</span>
+                        <div class="product-img">
+                            <img src="${item.image}" alt="${item.name}" onerror="this.src='image/placeholder.jpg'">
                         </div>
                         <div class="product-info">
                             <div class="product-title">${item.name}</div>
-                            <div class="product-price">${item.price}</div>
+                            <div class="product-price">¥${item.price}</div>
                         </div>
                     </div>
                 `).join('');
@@ -156,4 +213,5 @@
 
     </script>
 </body>
+
 </html>
