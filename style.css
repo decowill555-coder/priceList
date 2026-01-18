@@ -160,8 +160,14 @@ body {
     position: relative;
 }
 
-.product-img img{
-    width: 100%;
+/* 模拟图片内容 */
+.product-img span {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #aaa;
+    font-size: 12px;
 }
 
 .product-info {
@@ -187,11 +193,11 @@ body {
     font-weight: bold;
 }
 
-/* .product-price::before {
+.product-price::before {
     content: "¥";
     font-size: 12px;
     margin-right: 2px;
-} */
+}
 
 /* 无结果提示 */
 .no-results {
